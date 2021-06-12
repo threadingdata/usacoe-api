@@ -1,15 +1,12 @@
 library(plumber)
 library(tidyverse)
 library(lubridate)
-#library(redoc)
 library(pool)
 library(rapidoc)
 library(yaml)
 library(config)
 library(RPostgres)
-library(pdftools)
 source('set-env-vars.R')
-source('usbr/usbr_cron_scripts.R')
 
 # Helpers ----
 `%nin%` <- Negate(`%in%`)
@@ -25,22 +22,6 @@ conn <- pool::dbPool(drv = RPostgres::Postgres(),
                      password = cf$db_password,
                      dbname = cf$db_name,
                      minSize = cf$db_pool_minSize)
-
-#,
-#                     maxSize = cf$db_pool_maxSize,
-#                     idleTimeout = cf$db_pool_idleTimeout)
-#conn %>% pool::poolClose()
-
-#conn
-#conn %>%
-#  dbListTables
-#conn %>% pool::poolClose()
-
-users <- tibble(
-  id = 1:3,
-  username = c('joe', 'kim', 'derek'),
-  groups = c('users', 'admin,users', 'hmfic'))
-users
 
 # Database Index/Upsert Functionality ----
 dbCreateIndexedTable <- function(conn, table_name, .df, constraint_name,
@@ -167,34 +148,6 @@ dbUpsert <- function(conn,
   dbUpsertMechanics(.df, statement)
 }
 
-#'   collect
-slice.tbl_sql <- function(.data, ...) {
-  rows <- c(...)
-
-  .data %>%
-    mutate(...row_id = row_number()) %>%
-    filter(...row_id %in% !!rows) %>%
-    select(-...row_id)
-}
-
-# CDEC ----
-cdec <- function(station, sensor, duration, start_date, end_date){
-  Sys.sleep(1)
-  url <- httr::parse_url('https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet')
-  url$scheme <- 'http'
-  url$query <- list(Stations = toupper(paste0(station, collapse = ',')),
-                    SensorNums = paste0(sensor, collapse = ','),
-                    dur_code = toupper(duration),
-                    Start = start_date,
-                    End = end_date)
-  built_url <- build_url(url)
-  print(built_url)
-
-  df <- fromJSON(built_url) %>%
-    as_tibble()
-  df
-}
-
 # Water conversions ----
 #  Add Water Year
 add_wy <- function(df){
@@ -202,10 +155,13 @@ add_wy <- function(df){
     mutate(date = ymd(date),
            month = month(date),
            year = year(date),
-           water_year = ifelse(month %in% c(10:12), year + 1, year))
+           water_year = ifelse(month %in% c(10:12),
+                               year + 1,
+                               year))
 }
 #tibble(date = sample(c(today()-1000:today()), 10)) %>% add_wy()
 
+# Common water conversions ----
 af_to_gal <- function(x){
   stopifnot(is.numeric(x))
   x * 325851.4286

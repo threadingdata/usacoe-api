@@ -51,9 +51,8 @@ If Push/Pull buttons are greyed out, use the terminal for an initual push
 git push -u origin master
 ```
 
-Now commits should work to master branch
+If you end up with two repos, Main and Master, go to settings and change the default repo to Master.  Then delete Main.  From within R, you'll have to Pull the repo before you can again Push to it.
 
-A change
 
 ## PLUMBER API
 
