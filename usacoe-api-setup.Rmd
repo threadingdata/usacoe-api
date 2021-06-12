@@ -50,6 +50,11 @@ If Push/Pull buttons are greyed out, use the terminal for an initual push
 ```bash
 git push -u origin master
 ```
+
+Now commits should work to master branch
+
+A change
+
 ## PLUMBER API
 
 ## DOMAIN NAME
