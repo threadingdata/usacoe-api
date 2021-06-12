@@ -44,6 +44,12 @@ Connect to the repository by adding origin from the terminal in RStudio
 ```bash
 git remote add origin https://github.com/threadingdata/usacoe-api.git
 ```
+
+If Push/Pull buttons are greyed out, use the terminal for an initual push
+
+```bash
+git push -u origin master
+```
 ## PLUMBER API
 
 ## DOMAIN NAME
