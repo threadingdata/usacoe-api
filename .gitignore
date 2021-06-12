@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+set-env-vars.R
+config.yml
+usacoe-api-setup.html
+usacoe-api-setup.Rmd
+data
+www
+
